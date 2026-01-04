@@ -1,7 +1,6 @@
 import { createConfig, http } from 'wagmi'
 import { KeyManager, webAuthn } from 'tempo.ts/wagmi'
 
-// Define Tempo testnet chain
 const tempoTestnet = {
   id: 42429,
   name: 'Tempo Testnet',
@@ -18,11 +17,10 @@ export const config = createConfig({
   chains: [tempoTestnet],
   connectors: [
     webAuthn({
-      // localStorage for demo - use KeyManager.http() for production
       keyManager: KeyManager.localStorage(),
     }),
   ],
-  multiInjectedProviderDiscovery: false, // Disable MetaMask detection
+  multiInjectedProviderDiscovery: false,
   transports: {
     [tempoTestnet.id]: http(),
   },
