@@ -54,19 +54,14 @@ export function Activity({ address, onBack }: ActivityProps) {
     })
 
     try {
-      // Get current block number
-      const currentBlock = await client.getBlockNumber()
-
-      // Fetch logs from the last ~10000 blocks (adjust as needed)
-      const fromBlock = currentBlock > 10000n ? currentBlock - 10000n : 0n
-
       // Fetch Transfer events where user is sender or receiver
+      // Search from block 0 to get complete history (testnet has limited blocks)
       const [sentLogs, receivedLogs] = await Promise.all([
         // Transactions sent by user
         client.getLogs({
           address: ALPHA_USD,
           event: erc20Abi[0],
-          fromBlock,
+          fromBlock: 0n,
           toBlock: 'latest',
           args: {
             from: address,
@@ -76,7 +71,7 @@ export function Activity({ address, onBack }: ActivityProps) {
         client.getLogs({
           address: ALPHA_USD,
           event: erc20Abi[0],
-          fromBlock,
+          fromBlock: 0n,
           toBlock: 'latest',
           args: {
             to: address,
