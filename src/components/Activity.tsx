@@ -82,34 +82,43 @@ export function Activity({ address, onBack }: ActivityProps) {
       // Process and combine transactions
       const allTxs: Transaction[] = []
 
+      console.log('[Activity Debug] Sent logs:', sentLogs.length)
       for (const log of sentLogs) {
-        allTxs.push({
+        const tx = {
           hash: log.transactionHash!,
           from: log.args.from!,
           to: log.args.to!,
           value: formatUnits(log.args.value!, 6),
           blockNumber: log.blockNumber!,
-          type: 'sent',
-        })
+          type: 'sent' as const,
+        }
+        console.log('[Activity Debug] Sent:', tx)
+        allTxs.push(tx)
       }
 
+      console.log('[Activity Debug] Received logs:', receivedLogs.length)
       for (const log of receivedLogs) {
         // Skip if it's also in sent (to avoid duplicates)
         if (!allTxs.find(tx => tx.hash === log.transactionHash)) {
-          allTxs.push({
+          const tx = {
             hash: log.transactionHash!,
             from: log.args.from!,
             to: log.args.to!,
             value: formatUnits(log.args.value!, 6),
             blockNumber: log.blockNumber!,
-            type: 'received',
-          })
+            type: 'received' as const,
+          }
+          console.log('[Activity Debug] Received:', tx)
+          allTxs.push(tx)
+        } else {
+          console.log('[Activity Debug] Skipped duplicate:', log.transactionHash)
         }
       }
 
       // Sort by block number (most recent first)
       allTxs.sort((a, b) => Number(b.blockNumber - a.blockNumber))
 
+      console.log('[Activity Debug] Total transactions:', allTxs.length)
       setTransactions(allTxs)
     } catch (e) {
       console.error('Failed to fetch transactions:', e)
